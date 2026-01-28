@@ -11,41 +11,208 @@
 <body>
     <div class="container mt-4">
         <h1 class="text-center">Gerenciador de Gastos</h1>
-        <form id="expense-form" class="mb-4">
+        
+        <!-- Interface de Login (inicialmente visível) -->
+        <div id="login-interface" class="text-center mb-4">
+            <h3>Login</h3>
+            <form id="login-form">
+                <div class="mb-3">
+                    <input type="email" id="login-email" class="form-control" placeholder="Email" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" id="login-password" class="form-control" placeholder="Senha" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+                <button type="button" id="btn-register" class="btn btn-link">Registrar-se</button>
+            </form>
+            <div id="login-error" class="text-danger mt-2" style="display: none;"></div>
+        </div>
+        
+        <!-- Seleção de Mês (inicialmente oculta) -->
+        <div id="month-selection" class="text-center mb-4" style="display: none;">
+            <h3>Selecione o Mês</h3>
+            <select id="selected-month" class="form-control d-inline-block w-auto mb-3" required>
+                <option value="">Mês</option>
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+            <br>
+            <button id="btn-select-month" class="btn btn-primary">Selecionar Mês</button>
+            <br>
+            <button id="btn-logout" class="btn btn-secondary mt-3">Sair</button>
+        </div>
+        
+        <!-- Interface Principal (inicialmente oculta) -->
+        <div id="main-interface" style="display: none;">
+            <!-- Botões para Receita e Despesa -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <button id="btn-receita" class="btn btn-success w-100">Cadastrar Receita</button>
+                </div>
+                <div class="col-md-6">
+                    <button id="btn-despesa" class="btn btn-danger w-100">Cadastrar Despesa</button>
+                </div>
+            </div>
+            
+            <!-- Formulário para Receita (inicialmente oculto) -->
+            <form id="receita-form" class="mb-4" style="display: none;">
+                <h3>Cadastrar Receita</h3>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <input type="text" id="receita-name" class="form-control" placeholder="Nome" required>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="receita-day" class="form-control" required>
+                            <option value="">Dia</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <option value="26">26</option>
+                            <option value="27">27</option>
+                            <option value="28">28</option>
+                            <option value="29">29</option>
+                            <option value="30">30</option>
+                            <option value="31">31</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" id="receita-amount" class="form-control" placeholder="Valor (R$)" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <input type="text" id="receita-description" class="form-control" placeholder="Descrição" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-success w-100">Adicionar Receita</button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Formulário para Despesa (inicialmente oculto) -->
+            <form id="expense-form" class="mb-4" style="display: none;">
+                <h3>Cadastrar Despesa</h3>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <input type="text" id="name" class="form-control" placeholder="Nome" required>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="day" class="form-control" required>
+                            <option value="">Dia</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <option value="26">26</option>
+                            <option value="27">27</option>
+                            <option value="28">28</option>
+                            <option value="29">29</option>
+                            <option value="30">30</option>
+                            <option value="31">31</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" id="amount" class="form-control" placeholder="Valor (R$)" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" id="description" class="form-control" placeholder="Descrição" required>
+                    </div>
+                    <div class="col-md-6">
+                        <select id="category" class="form-control" required>
+                            <option value="">Categoria</option>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Lazer">Lazer</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-danger w-100">Adicionar Despesa</button>
+                    </div>
+                </div>
+            </form>
+            
             <div class="row">
-                <div class="col-md-3">
-                    <input type="number" id="amount" class="form-control" placeholder="Valor (R$)" required>
+                <div class="col-md-6">
+                    <h3>Resumo Mensal</h3>
+                    <p>Total Receitas: R$ <span id="total-receitas">0.00</span></p>
+                    <p>Total Despesas: R$ <span id="total-despesas">0.00</span></p>
+                    <p>Saldo: R$ <span id="saldo">0.00</span></p>
+                    <canvas id="chart"></canvas>
                 </div>
-                <div class="col-md-3">
-                    <input type="text" id="description" class="form-control" placeholder="Descrição" required>
-                </div>
-                <div class="col-md-3">
-                    <select id="category" class="form-control" required>
-                        <option value="">Categoria</option>
-                        <option value="Alimentação">Alimentação</option>
-                        <option value="Transporte">Transporte</option>
-                        <option value="Lazer">Lazer</option>
-                        <option value="Outros">Outrs</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+                <div class="col-md-6">
+                    <h3>Transações Recentes</h3>
+                    <ul id="transaction-list" class="list-group"></ul>
                 </div>
             </div>
-        </form>
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Resumo Mensal</h3>
-                <p>Total: R$ <span id="total">0.00</span></p>
-                <canvas id="chart"></canvas>
-            </div>
-            <div class="col-md-6">
-                <h3>Gastos Recentes</h3>
-                <ul id="expense-list" class="list-group"></ul>
+            
+            <!-- Botão para mudar mês -->
+            <div class="text-center mt-4">
+                <button id="btn-change-month" class="btn btn-secondary">Mudar Mês</button>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
