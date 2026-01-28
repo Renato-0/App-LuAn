@@ -91,7 +91,7 @@ function updateUI() {
         li.className = 'list-group-item d-flex justify-content-between align-items-center ' + (t.type === 'receita' ? 'text-success' : 'text-danger'); // Verde para receitas, vermelho para despesas usando classes Bootstrap
         
         // Construir o conteúdo do li, incluindo o botão de excluir diretamente no innerHTML para garantir visibilidade
-        let content = `${t.day}/${selectedMonth}: R$ ${parseFloat(t.amount).toFixed(2)}  - ${t.name} - ${t.description}`;
+        let content = `${t.day}/${selectedMonth}: R$ ${parseFloat(t.amount).toFixed(2)}  - ${t.name} \n ${t.description}`;
         if (t.category) {
             content += ` (${t.category})`;
         }
