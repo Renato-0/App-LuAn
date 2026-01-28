@@ -93,7 +93,7 @@ function updateUI() {
         // Construir o conteúdo do li, incluindo o botão de excluir diretamente no innerHTML para garantir visibilidade
         let content = `${t.day}/${selectedMonth}: R$ ${parseFloat(t.amount).toFixed(2)}  - ${t.name}\n${t.description}`;
         if (t.category) {
-            content += ` (${t.category})`;
+            content += ` (\n${t.category})`;
         }
         content += ` <button class="btn btn-danger btn-sm" data-id="${t.id}">Excluir</button>`;
         li.innerHTML = content;
