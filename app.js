@@ -2,7 +2,7 @@
 
 import { auth, db } from './firebase-config.js';
 import { 
-    signInWithEmailAndPassword, 
+    signInWithEmailAndPassword,  
     createUserWithEmailAndPassword, 
     signOut, 
     onAuthStateChanged 
@@ -10,15 +10,72 @@ import {
 import { 
     doc, 
     setDoc, 
-    getDoc 
+    getDoc,
+    collection,
+    getDocs,
+    addDoc,
+    serverTimestamp 
 } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
 // Variáveis globais
-let transactions = []; // Array para armazenar transações do mês selecionado
-let selectedMonth = null; // Mês selecionado
-let currentUser = null; // Usuário logado
+let transactions = [];
+let selectedMonth = null;
+let currentUser = null;
+let editingId = null;
 
-// Função para carregar dados do Firestore para o mês selecionado e usuário
+// Função para atualizar uma transação pelo ID
+async function updateTransaction(id, newData) {
+    // Encontrar o índice da transação no array
+    const index = transactions.findIndex(t => t.id === id);
+    
+    if (index > -1) {
+        // Atualiza os dados mantendo o ID original e mesclando com dados novos
+        transactions[index] = { 
+            ...transactions[index], 
+            ...newData 
+        };
+        
+        console.log(`Atualizando transação ID ${id}:`, newData);
+
+        // Salva no Firestore e atualiza a interface
+        await saveData(currentUser.uid, selectedMonth);
+        updateUI();
+        
+        console.log('Transação atualizada com sucesso!');
+    } else {
+        alert('Transação não encontrada.');
+    }
+}
+
+
+// Função para carregar categorias do Firestore
+async function loadCategories() {
+    const categorySelect = document.getElementById('category');
+    
+    // Limpa as opções atuais (exceto a primeira padrão e a opção "Nova")
+    const defaultOptions = categorySelect.querySelectorAll('option[value=""], option[value="new"]');
+    categorySelect.innerHTML = '';
+    defaultOptions.forEach(opt => categorySelect.appendChild(opt));
+
+    try {
+        // Acessa a coleção 'categorias' no Firestore
+        const querySnapshot = await getDocs(collection(db, "categorias"));
+        
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const option = document.createElement('option');
+            option.value = data.nome;
+            option.textContent = data.nome;
+            categorySelect.appendChild(option);
+        });
+        
+        console.log('Categorias carregadas com sucesso');
+    } catch (error) {
+        console.error("Erro ao carregar categorias: ", error);
+    }
+}
+
+// Função para carregar dados do Firestore
 async function loadData(userId, month) {
     try {
         console.log(`Carregando dados para o usuário ${userId}, mês ${month}...`);
@@ -37,7 +94,7 @@ async function loadData(userId, month) {
     }
 }
 
-// Função para salvar dados no Firestore para o mês selecionado e usuário
+// Função para salvar dados no Firestore
 async function saveData(userId, month) {
     try {
         console.log(`Salvando dados para o usuário ${userId}, mês ${month}...`);
@@ -62,9 +119,46 @@ async function deleteTransaction(id) {
     }
 }
 
-// Função para atualizar a interface do usuário (totais, lista de transações e gráfico)
+function prepareEdit(id) {
+    const transaction = transactions.find(t => t.id === id);
+    if (!transaction) return;
+
+    // Define o ID que está sendo editado
+    editingId = id;
+
+    if (transaction.type === 'receita') {
+        // Mostra formulário de receita
+        document.getElementById('receita-form').style.display = 'block';
+        document.getElementById('expense-form').style.display = 'none';
+        
+        // Preenche os campos
+        document.getElementById('receita-name').value = transaction.name;
+        document.getElementById('receita-day').value = transaction.day;
+        document.getElementById('receita-amount').value = transaction.amount;
+        document.getElementById('receita-description').value = transaction.description || '';
+        
+    } else {
+        // Mostra formulário de despesa
+        document.getElementById('expense-form').style.display = 'block';
+        document.getElementById('receita-form').style.display = 'none';
+        
+        // Preenche os campos
+        document.getElementById('name').value = transaction.name;
+        document.getElementById('day').value = transaction.day;
+        document.getElementById('amount').value = transaction.amount;
+        document.getElementById('description').value = transaction.description || '';
+        document.getElementById('category').value = transaction.category || '';
+    }
+    
+    // Opcional: Scroll até o formulário
+    document.getElementById('expense-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+
+// Função para atualizar a interface do usuário
 function updateUI() {
     console.log('Atualizando UI...');
+    
     // Calcular totais
     let totalReceitas = 0;
     let totalDespesas = 0;
@@ -82,41 +176,64 @@ function updateUI() {
     document.getElementById('total-despesas').textContent = totalDespesas.toFixed(2);
     document.getElementById('saldo').textContent = saldo.toFixed(2);
 
-    // Atualizar lista de transações (ordenadas por dia)
+    // Atualizar lista de transações com tabela HTML e data-label para mobile
     const list = document.getElementById('transaction-list');
+    const noTransactions = document.getElementById('no-transactions');
     list.innerHTML = '';
-    transactions.sort((a, b) => a.day - b.day); // Ordenar por dia
-    transactions.forEach(t => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item d-flex justify-content-between align-items-center ' + (t.type === 'receita' ? 'text-success' : 'text-danger'); // Verde para receitas, vermelho para despesas usando classes Bootstrap
+
+    // Ordenar por dia
+    transactions.sort((a, b) => a.day - b.day);
+
+    if (transactions.length === 0) {
+        noTransactions.style.display = 'block';
+    } else {
+        noTransactions.style.display = 'none';
         
-        // Construir o conteúdo do li, incluindo o botão de excluir diretamente no innerHTML para garantir visibilidade
-        let content = `${t.day}/${selectedMonth} - ${t.name}: R$ ${parseFloat(t.amount).toFixed(2)} - ${t.description}`;
-        if (t.category) {
-            content += ` (${t.category})`;
-        }
-        content += ` <button class="btn btn-danger btn-sm" data-id="${t.id}">Excluir</button>`;
-        li.innerHTML = content;
-        
-        list.appendChild(li);
-    });
+        transactions.forEach(t => {
+            const tr = document.createElement('tr');
+            
+            // Determinar cor do valor
+            const valorColor = t.type === 'receita' ? '#198754' : '#dc3545';
+            const valorSign = t.type === 'receita' ? '+' : '-';
+            const tipoLabel = t.type === 'receita' ? 'Receita' : 'Despesa';
+            
+            tr.innerHTML = `
+                <td data-label="Data">${t.day}/${selectedMonth}</td>
+                <td data-label="Tipo">${tipoLabel}</td>
+                <td data-label="Nome">${t.name}</td>
+                <td data-label="Descrição">${t.description || '-'}</td>
+                <td data-label="Categoria">${t.category || '-'}</td>
+                <td data-label="Valor" style="color: ${valorColor}; font-weight: bold;">
+                    ${valorSign} R$ ${parseFloat(t.amount).toFixed(2)}
+                    <button class="btn btn-warning btn-sm me-1 btn-edit" data-id="${t.id}">✏️</button>
+                    <button class="btn btn-danger btn-sm ms-2" data-id="${t.id}">✕</button>
+                </td>
+            `;
+            
+            list.appendChild(tr);
+        });
+    }
 
     // Atualizar gráfico
     updateChart();
 }
 
+
+
 // Função para atualizar o gráfico de despesas por categoria
 function updateChart() {
     const ctx = document.getElementById('chart').getContext('2d');
+    
     // Calcular despesas por categoria
     const categories = {};
     transactions.filter(t => t.type === 'despesa').forEach(t => {
         categories[t.category] = (categories[t.category] || 0) + parseFloat(t.amount);
     });
+    
     const labels = Object.keys(categories);
     const data = Object.values(categories);
 
-    // Destruir gráfico anterior se existir para evitar sobreposições
+    // Destruir gráfico anterior se existir
     if (window.myChart) {
         window.myChart.destroy();
     }
@@ -133,6 +250,7 @@ function updateChart() {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
                 legend: {
                     position: 'top',
@@ -234,6 +352,7 @@ document.getElementById('btn-select-month').addEventListener('click', async func
         document.getElementById('month-selection').style.display = 'none';
         document.getElementById('main-interface').style.display = 'block';
         await loadData(currentUser.uid, selectedMonth);
+        await loadCategories(); // Carrega categorias do Firestore
         updateUI();
     } else {
         alert('Por favor, selecione um mês.');
@@ -269,28 +388,38 @@ document.getElementById('receita-form').addEventListener('submit', async functio
     const amount = document.getElementById('receita-amount').value;
     const description = document.getElementById('receita-description').value.trim();
 
-    if (!name || !day || !amount || !description || !currentUser) {
+    if (!name || !day || !amount || !currentUser) {
         alert('Por favor, preencha todos os campos.');
         return;
     }
 
-    // Adicionar transação com ID único
-    transactions.push({
-        id: Date.now(), // ID único baseado em timestamp
+
+     const data = {
         type: 'receita',
         name: name,
         day: parseInt(day),
         amount: parseFloat(amount),
         description: description
-    });
+    };
 
-    // Salvar no Firestore e atualizar UI
-    await saveData(currentUser.uid, selectedMonth);
-    updateUI();
-
+    if (editingId) {
+        // MODO EDIÇÃO
+        await updateTransaction(editingId, data);
+    } else {
+        // MODO CRIAÇÃO (código original) // Adicionar transação com ID único
+        transactions.push({
+            id: Date.now(),
+            ...data
+        });
+        // Salvar no Firestore e atualizar UI
+        await saveData(currentUser.uid, selectedMonth);
+        updateUI();
+    }
+    
     // Limpar formulário e ocultar
     this.reset();
     this.style.display = 'none';
+    editingId = null; // Reseta o modo edição
 });
 
 // Event listener para o formulário de despesa
@@ -302,35 +431,117 @@ document.getElementById('expense-form').addEventListener('submit', async functio
     const description = document.getElementById('description').value.trim();
     const category = document.getElementById('category').value;
 
-    if (!name || !day || !amount || !description || !category || !currentUser) {
+    if (!name || !day || !amount || !category || !currentUser) {
         alert('Por favor, preencha todos os campos.');
         return;
     }
 
-    // Adicionar transação com ID único
-    transactions.push({
-        id: Date.now(), // ID único baseado em timestamp
+    
+    const data = {
         type: 'despesa',
         name: name,
         day: parseInt(day),
         amount: parseFloat(amount),
         description: description,
         category: category
-    });
+    };
 
-    // Salvar no Firestore e atualizar UI
-    await saveData(currentUser.uid, selectedMonth);
-    updateUI();
+    if (editingId) {
+        // MODO EDIÇÃO
+        await updateTransaction(editingId, data);
+    } else {
+        // MODO CRIAÇÃO (código original)// Adicionar transação com ID único
+        transactions.push({
+            id: Date.now(),
+            ...data
+        });
+        // Salvar no Firestore e atualizar UI
+        await saveData(currentUser.uid, selectedMonth);
+        updateUI();
+    }
 
+    
+    
     // Limpar formulário e ocultar
     this.reset();
     this.style.display = 'none';
+    editingId = null; // Reseta o modo edição
 });
 
 // Event listener para excluir transação (usando event delegation)
 document.getElementById('transaction-list').addEventListener('click', function(e) {
+
+
     if (e.target && e.target.classList.contains('btn-danger')) {
         const id = parseInt(e.target.getAttribute('data-id'));
         deleteTransaction(id);
+    }
+
+    if (e.target && e.target.classList.contains('btn-edit')) {
+        const id = parseInt(e.target.getAttribute('data-id'));
+        prepareEdit(id);
+    }
+});
+
+// ================== NOVAS FUNÇÕES PARA CATEGORIAS ==================
+
+// Event listener para mostrar/ocultar campo de nova categoria
+document.getElementById('category').addEventListener('change', function() {
+    const newCategoryArea = document.getElementById('new-category-area');
+    const newCategoryInput = document.getElementById('new-category-name');
+    
+    if (this.value === 'new') {
+        // Mostra o campo de input
+        newCategoryArea.style.display = 'flex';
+        newCategoryInput.focus();
+    } else {
+        // Esconde o campo de input
+        newCategoryArea.style.display = 'none';
+        newCategoryInput.value = '';
+    }
+});
+
+// Event listener para salvar nova categoria
+document.getElementById('save-category-btn').addEventListener('click', async function() {
+    const newCategoryInput = document.getElementById('new-category-name');
+    const categorySelect = document.getElementById('category');
+    const newCategoryArea = document.getElementById('new-category-area');
+    
+    const nomeNovaCategoria = newCategoryInput.value.trim();
+
+    if (nomeNovaCategoria) {
+        try {
+            // Adiciona no Firestore
+            const docRef = await addDoc(collection(db, "categorias"), {
+                nome: nomeNovaCategoria,
+                criadoEm: serverTimestamp()
+            });
+            
+            console.log("Categoria salva com ID: ", docRef.id);
+            
+            // Atualiza a interface: recarrega as opções
+            await loadCategories();
+
+            // Seleciona automaticamente a categoria recém-criada
+            categorySelect.value = nomeNovaCategoria;
+
+            // Esconde o campo de input novamente
+            newCategoryArea.style.display = 'none';
+            newCategoryInput.value = '';
+            
+            alert('Categoria adicionada com sucesso!');
+        } catch (error) {
+            console.error("Erro ao adicionar categoria: ", error);
+            alert("Erro ao salvar categoria. Tente novamente.");
+        }
+    } else {
+        alert("Por favor, digite o nome da categoria.");
+    }
+});
+
+// Event listener para Enter no campo de nova categoria
+document.getElementById('new-category-name').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        document.getElementById('save-category-btn').click();
     }
 });

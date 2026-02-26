@@ -1,11 +1,519 @@
+/* styles.css */
+
+/* Reset básico e configurações globais */
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    padding-bottom: 50px;
+    background-color: #6496c9;
+}
+
+/* Ajustes do container */
+.container {
+    max-width: 1200px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Melhorias para títulos */
+h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+/* Ajustes para formulários */
+.form-control {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Ajustes para botões */
+.btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.btn-link {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Ajustes para badges */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem;
+}
+
+.fs-4 {
+    font-size: 1rem !important;
+}
+
+.fs-5 {
+    font-size: 0.9rem !important;
+}
+
+/* Ajustes para cards */
+.card {
+    margin-bottom: 1rem;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Ajustes para navegação de abas */
+.nav-tabs {
+    border-bottom: 1px solid #04080c;
+}
+
+.nav-tabs .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: #495057;
+    background-color: #5eaac9;
+    border: 1px solid transparent;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #e9ecef #e9ecef #dee2e6;
+    isolation: isolate;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+/* Ajustes para a tabela */
+.table-responsive {
+    margin: 0 -15px;
+    padding: 0 15px;
+}
+
+.table {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+.table th,
+.table td {
+    padding: 0.5rem;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table th {
+    font-weight: 600;
+    color: #495057;
     background-color: #f8f9fa;
 }
-canvas {
-    max-width: 100%;
-    height: 200px;
+
+.table td {
+    color: #212529;
 }
-.list-group-item {
-    border-radius: 5px;
+
+/* Ajustes específicos para mobile */
+@media (max-width: 576px) {
+    body {
+        padding: 10px 5px 30px;
+    }
+    
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.1rem;
+    }
+    
+    /* Login form */
+    #login-interface {
+        padding: 15px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 0 -10px;
+    }
+    
+    #login-form .mb-3 {
+        margin-bottom: 10px;
+    }
+    
+    /* Month selection */
+    #month-selection {
+        padding: 15px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 0 -10px;
+    }
+    
+    #selected-month {
+        width: 100% !important;
+    }
+    
+    /* Cards */
+    .card-body {
+        padding: 15px;
+    }
+    
+    .badge {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+        text-align: center;
+    }
+    
+    /* Buttons row */
+    .row.mb-4 {
+        margin-left: -5px;
+        margin-right: -5px;
+    }
+    
+    .row.mb-4 > .col-md-6 {
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 10px;
+    }
+    
+    /* Formulários */
+    #receita-form,
+    #expense-form {
+        padding: 15px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 0 -10px 15px;
+    }
+    
+    #receita-form .row,
+    #expense-form .row {
+        margin-left: -5px;
+        margin-right: -5px;
+    }
+    
+    #receita-form .col-md-4,
+    #receita-form .col-md-12,
+    #receita-form .col-md-6,
+    #expense-form .col-md-4,
+    #expense-form .col-md-6,
+    #expense-form .col-md-12 {
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 10px;
+    }
+    
+    /* Nav tabs mobile */
+    .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -15px;
+        padding: 0 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .nav-tabs {
+        border-bottom: none;
+        flex-wrap: nowrap;
+    }
+    
+    .nav-item {
+        flex: 0 0 auto;
+    }
+    
+    .nav-tabs .nav-link {
+        white-space: nowrap;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Tabela mobile */
+    .table-responsive {
+        margin: 0;
+        padding: 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px;
+    }
+    
+    /* Transações table - cards mobile */
+    #transacoes-pane .table-responsive {
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    #transacoes-pane tbody tr {
+        display: block;
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px;
+    }
+    
+    #transacoes-pane tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    #transacoes-pane tbody td {
+        display: block;
+        padding: 5px 0;
+        border: none;
+        white-space: normal;
+    }
+    
+    #transacoes-pane tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #495057;
+        display: inline-block;
+        width: 80px;
+    }
+    
+    #transacoes-pane thead {
+        display: none;
+    }
+    
+    /* Gráfico */
+    #chart {
+        max-height: 250px;
+        width: 100%;
+    }
+}
+
+/* Ajustes para tablets */
+@media (min-width: 577px) and (max-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    .badge {
+        font-size: 0.9rem;
+    }
+    
+    .fs-4 {
+        font-size: 1.1rem !important;
+    }
+    
+    .fs-5 {
+        font-size: 1rem !important;
+    }
+    
+    /* Tabela */
+    .table {
+        font-size: 0.85rem;
+    }
+    
+    #transacoes-pane tbody td {
+        white-space: nowrap;
+    }
+}
+
+/* Ajustes para desktop */
+@media (min-width: 769px) {
+    .container {
+        max-width: 1200px;
+    }
+    
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    
+    #chart {
+        height: 300px;
+    }
+}
+
+/* Animações suaves */
+.fade {
+    transition: opacity 0.15s linear;
+}
+
+.tab-content > .tab-pane {
+    display: none;
+}
+
+.tab-content > .active {
+    display: block;
+}
+
+/* Utilitários adicionais */
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Melhorias de acessibilidade */
+.btn:focus,
+.form-control:focus,
+.nav-link:focus {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+/* Ajuste para o canvas do gráfico */
+canvas#chart {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Mensagens de erro e sucesso */
+#login-error {
+    font-size: 0.85rem;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Loading state */
+.btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Scrollbar personalizada para tabelas */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Ajuste para telas muito pequenas (iPhone SE, etc.) */
+@media (max-width: 360px) {
+    .btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .form-control {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    .badge {
+        font-size: 0.8rem;
+    }
+}
+
+/* Ajuste para landscape em mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+    
+    .container {
+        padding: 5px 10px;
+    }
+    
+    h1 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card {
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 10px;
+    }
+    
+    .mb-4 {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Ajuste específico para o botão de logout e mudança de mês */
+#btn-logout,
+#btn-change-month {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+}
+
+/* Melhorias visuais para os formulários em desktop */
+@media (min-width: 769px) {
+    #receita-form,
+    #expense-form {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+}
+
+/* Ajuste para a mensagem de nenhuma transação */
+#no-transactions {
+    padding: 20px;
+    font-size: 0.9rem;
 }
