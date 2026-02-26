@@ -1,7 +1,7 @@
 // app.js - Gerenciador de Gastos com Firestore e Auth
 
 import { auth, db } from './firebase-config.js';
-import { 
+import {  
     signInWithEmailAndPassword,  
     createUserWithEmailAndPassword, 
     signOut, 
