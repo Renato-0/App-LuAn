@@ -180,39 +180,21 @@ function updateUI() {
     const list = document.getElementById('transaction-list');
     const noTransactions = document.getElementById('no-transactions');
     list.innerHTML = '';
-
-    // Ordenar por dia
-    transactions.sort((a, b) => a.day - b.day);
-
-    if (transactions.length === 0) {
-        noTransactions.style.display = 'block';
-    } else {
-        noTransactions.style.display = 'none';
+    transactions.sort((a, b) => a.day - b.day); // Ordenar por dia
+    transactions.forEach(t => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center ' + (t.type === 'receita' ? 'text-success' : 'text-danger'); // Verde para receitas, vermelho para despesas usando classes Bootstrap
         
-        transactions.forEach(t => {
-            const tr = document.createElement('tr');
-            
-            // Determinar cor do valor
-            const valorColor = t.type === 'receita' ? '#198754' : '#dc3545';
-            const valorSign = t.type === 'receita' ? '+' : '-';
-            const tipoLabel = t.type === 'receita' ? 'Receita' : 'Despesa';
-            
-            tr.innerHTML = `
-                <td data-label="Data">${t.day}/${selectedMonth}</td>
-                <td data-label="Tipo">${tipoLabel}</td>
-                <td data-label="Nome">${t.name}</td>
-                <td data-label="Descrição">${t.description || '-'}</td>
-                <td data-label="Categoria">${t.category || '-'}</td>
-                <td data-label="Valor" style="color: ${valorColor}; font-weight: bold;">
-                    ${valorSign} R$ ${parseFloat(t.amount).toFixed(2)}
-                    <button class="btn btn-warning btn-sm me-1 btn-edit" data-id="${t.id}">✏️</button>
-                    <button class="btn btn-danger btn-sm ms-2" data-id="${t.id}">✕</button>
-                </td>
-            `;
-            
-            list.appendChild(tr);
-        });
-    }
+        // Construir o conteúdo do li, incluindo o botão de excluir diretamente no innerHTML para garantir visibilidade
+        let content = `${t.day}/${selectedMonth} - ${t.name}: R$ ${parseFloat(t.amount).toFixed(2)} - ${t.description}`;
+        if (t.category) {
+            content += ` (${t.category})`;
+        }
+        content += ` <button class="btn btn-danger btn-sm" data-id="${t.id}">Excluir</button>`;
+        li.innerHTML = content;
+        
+        list.appendChild(li);
+    });
 
     // Atualizar gráfico
     updateChart();
